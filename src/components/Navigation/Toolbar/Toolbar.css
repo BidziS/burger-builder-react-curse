@@ -21,10 +21,6 @@
     height: 80%;
 }
 
-.Logo img {
-    max-height: 30px
-}
-
 @media (max-width: 499px) {
     .DesktopOnly {
         display: none;
