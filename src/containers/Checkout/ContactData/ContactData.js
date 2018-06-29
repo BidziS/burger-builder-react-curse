@@ -10,31 +10,32 @@ import classes from './ContactData.css';
 import axios from '../../../axios-orders';
 import withErrorHandler from '../../../hoc/withErrorHandler/withErrorHandler';
 import * as actions from '../../../store/actions/index';
+import { createInputConfigObject } from '../../../utils/utils';
 
 class ContactData extends Component {
     state = {
         orderForm: {
-            name: this.createInputConfigObject(
+            name: createInputConfigObject(
                 'input', { type: 'text', placeholder: 'Your Name' }, '',
                 { required: true }
             ),
-            street: this.createInputConfigObject(
+            street: createInputConfigObject(
                 'input', { type: 'text', placeholder: 'Street' }, '',
                 { required: true }
             ),
-            zipCode: this.createInputConfigObject(
+            zipCode: createInputConfigObject(
                 'input', { type: 'text', placeholder: 'ZIP Code' }, '',
                 { required: true, minLength: 5, maxLength: 5 }
             ),
-            country: this.createInputConfigObject(
+            country: createInputConfigObject(
                 'input', { type: 'text', placeholder: 'Country' }, '',
                 { required: true }
             ),
-            email: this.createInputConfigObject(
+            email: createInputConfigObject(
                 'input', { type: 'email', placeholder: 'Your E-Mail' }, '',
                 { required: true }
             ),
-            deliveryMethod: this.createInputConfigObject('select',
+            deliveryMethod: createInputConfigObject('select',
                 {
                     options: [
                         { value: 'fastest', displayValue: 'Fastest' },
@@ -43,17 +44,6 @@ class ContactData extends Component {
                 }, 'fastest', {}, true),
         },
         formIsValid: false
-    }
-
-    createInputConfigObject(elementType, elementConfig, value, validation, valid = false) {
-        return {
-            elementType: elementType,
-            elementConfig: elementConfig,
-            value: value,
-            validation: validation,
-            valid: valid,
-            touched: false
-        };
     }
 
     checkValidity(value, rules) {
@@ -83,9 +73,10 @@ class ContactData extends Component {
         const order = {
             ingredients: this.props.ings,
             price: this.props.price,
-            orderData: formData
+            orderData: formData,
+            userId: this.props.userId
         }
-        this.props.onOrderBurger(order);
+        this.props.onOrderBurger(order, this.props.token);
     }
 
     inputChangeHandler = (event, inputIdentifier) => {
@@ -149,13 +140,15 @@ const mapStateToProps = state => {
     return {
         ings: state.burgerBuilder.ingredients,
         price: state.burgerBuilder.totalPrice,
-        loading: state.order.loading
+        loading: state.order.loading,
+        token: state.auth.token,
+        userId: state.auth.userId
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
-        onOrderBurger: (order) => dispatch(actions.purchaseBurger(order))
+        onOrderBurger: (order, token) => dispatch(actions.purchaseBurger(order, token))
     }
 };
 
